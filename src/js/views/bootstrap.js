@@ -119,6 +119,7 @@
 
             $(controlEl).after(wrapper);
             wrapper.append(controlEl);
+            wrapper.append($(fieldEl).find(".help-block"));
 
             $(fieldEl).append("<div style='clear:both;'></div>");
         }

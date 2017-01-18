@@ -1313,7 +1313,12 @@
             }
 
             // remove any alpaca messages for this field
-            $(this.getFieldEl()).children(".alpaca-message").remove();
+            if (self.view.horizontal) { 
+                $(this.getFieldEl()).children().children(".alpaca-message").remove();
+            } else {
+                $(this.getFieldEl()).children(".alpaca-message").remove();    
+            }
+            
 
             // maxMessage
             if (messages && messages.length > 0) {
@@ -1350,7 +1355,13 @@
                         {
                             messageElement.addClass("alpaca-message-hidden");
                         }
-                        $(self.getFieldEl()).append(messageElement);
+                        if (self.view.horizontal){
+                           $(self.getControlEl()).parent().append(messageElement);     
+                        } else {
+                           $(self.getFieldEl()).append(messageElement);     
+                        }
+
+                        
                     }
 
                     // CALLBACK: "addMessage"
