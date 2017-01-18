@@ -5,12 +5,13 @@
     "postupdate": "./node_modules/.bin/bower update",
     "start": "./node_modules/.bin/gulp clean default"
   },
+  "private":true,
   "repository": {
     "type": "git",
-    "url": "git://github.com/gitana/alpaca.git"
+    "url": "git://github.com/justshrey/alpaca.git"
   },
   "license": "Apache-2.0",
-  "version": "1.5.22",
+  "version": "1.5.23-patch.1",
   "devDependencies": {
     "bower": "*",
     "stream-browserify": "*",
