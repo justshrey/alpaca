@@ -784,6 +784,8 @@
                 "deleteType": file.deleteType
             };
 
+
+
             callback(null, descriptor);
         },
 

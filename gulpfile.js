@@ -134,7 +134,8 @@ var paths = {
             "src/js/views/web.js",
             "src/js/views/jqueryui.js",
             "src/js/views/jquerymobile.js",
-            "src/js/views/bootstrap.js"
+            "src/js/views/bootstrap.js",
+            "src/js/views/bootstrap-awesome.js"
         ],
         web: [
             "build/tmp/templates-web.js",
@@ -158,6 +159,12 @@ var paths = {
             "build/tmp/scripts-core.js",
             "src/js/views/web.js",
             "src/js/views/bootstrap.js"
+        ],
+        bootstrap_awesome: [
+            "build/tmp/templates-bootstrap-awesome.js",
+            "build/tmp/scripts-core.js",
+            "src/js/views/web.js",
+            "src/js/views/bootstrap-awesome.js"
         ]
     },
     templates: {
@@ -190,6 +197,14 @@ var paths = {
             "src/templates/bootstrap-edit/**/*.html",
             "src/templates/bootstrap-create/**/*.html"
         ],
+        bootstrap_awesome: [
+            "src/templates/web-display/**/*.html",
+            "src/templates/web-edit/**/*.html",
+            "src/templates/web-create/**/*.html",
+            "src/templates/bootstrap-awesome-display/**/*.html",
+            "src/templates/bootstrap-awesome-edit/**/*.html",
+            "src/templates/bootstrap-awesome-create/**/*.html"
+        ],
         all: [
             "src/templates/**/*.html"
         ]
@@ -207,6 +222,11 @@ var paths = {
             "src/css/alpaca-core.css",
             "src/css/alpaca-fields.css",
             "src/css/alpaca-bootstrap.css"
+        ],
+        bootstrap_awesome: [
+            "src/css/alpaca-core.css",
+            "src/css/alpaca-fields.css",
+            "src/css/alpaca-bootstrap-awesome.css"
         ],
         jquerymobile: [
             "src/css/alpaca-core.css",
@@ -279,6 +299,18 @@ gulp.task("build-templates", function(cb)
             .pipe(concat('templates-bootstrap.js'))
             .pipe(gulp.dest('build/tmp/')),
 
+        // bootstrap-awesome
+        gulp.src(paths.templates["bootstrap_awesome"])
+            .pipe(handlebars({ handlebars: require('handlebars') }))
+            .pipe(wrap('Handlebars.template(<%= contents %>)'))
+            .pipe(declare({
+                namespace: 'HandlebarsPrecompiled',
+                processName: processName,
+                noRedeclare: true
+            }))
+            .pipe(concat('templates-bootstrap-awesome.js'))
+            .pipe(gulp.dest('build/tmp/')),
+        
         // jqueryui
         gulp.src(paths.templates["jqueryui"])
             .pipe(handlebars({ handlebars: require('handlebars') }))
@@ -420,7 +452,15 @@ gulp.task("build-scripts", function(cb) {
                 .pipe(concat('alpaca.min.js'))
                 .pipe(uglify())
                 .pipe(gulp.dest('build/alpaca/bootstrap')),
-
+            // bootstrap-awesome
+            gulp.src(paths.scripts.bootstrap_awesome)
+                .pipe(concat('alpaca.js'))
+                .pipe(wrapUmd(bootstrap_wrap))
+                .pipe(gulp.dest('build/alpaca/bootstrap-awesome'))
+                .pipe(concat('alpaca.min.js'))
+                .pipe(uglify())
+                .pipe(gulp.dest('build/alpaca/bootstrap-awesome')),
+            
             // jqueryui
             gulp.src(paths.scripts.jqueryui)
                 .pipe(concat('alpaca.js'))
@@ -473,6 +513,16 @@ gulp.task("build-styles", function(cb) {
             gulp.src("src/css/images/**")
                 .pipe(gulp.dest('./build/alpaca/bootstrap/images')),
 
+            // bootstrap-awesome
+            gulp.src(paths.styles.bootstrap_awesome)
+                .pipe(concat('alpaca.css'))
+                .pipe(gulp.dest('build/alpaca/bootstrap-awesome'))
+                .pipe(rename({suffix: ".min"}))
+                .pipe(minifyCss())
+                .pipe(gulp.dest('build/alpaca/bootstrap-awesome')),
+            gulp.src("src/css/images/**")
+                .pipe(gulp.dest('./build/alpaca/bootstrap-awesome/images')),
+            
             // jqueryui
             gulp.src(paths.styles.jqueryui)
                 .pipe(concat('alpaca.css'))

@@ -1,0 +1,22 @@
+<script type="text/x-handlebars-template">
+
+    <div class="form-group form-group-lg">
+
+        {{#if options.label}}
+        <label class="{{#if options.labelClass}}{{options.labelClass}}{{/if}} control-label alpaca-control-label" for="{{id}}">{{{options.label}}}</label>
+        {{/if}}
+
+        {{#control}}{{/control}}
+
+        {{#if options.helpers}}
+        {{#each options.helpers}}
+        <p class="help-block {{#if options.helperClass}}{{options.helperClass}}{{/if}}">
+            <i class="fa fa-info"></i>
+            {{{.}}}
+        </p>
+        {{/each}}
+        {{/if}}
+
+    </div>
+
+</script>
