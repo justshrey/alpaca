@@ -291,6 +291,8 @@
             // each property in the object can have a different schema and options so we need to process
             // asynchronously and wait for all to complete
 
+            var itemsByPropertyId = {};
+
             // wrap into waterfall functions
             var propertyFunctions = [];
             for (var propertyId in properties)
@@ -323,17 +325,10 @@
 
                             self.createItem(propertyId, schema, options, itemData, null, function (addedItemControl) {
 
-                                items.push(addedItemControl);
+                                itemsByPropertyId[propertyId] = addedItemControl;
 
                                 // remove from extraDataProperties helper
                                 delete extraDataProperties[propertyId];
-
-                                // by the time we get here, we may have constructed a very large child chain of
-                                // sub-dependencies and so we use nextTick() instead of a straight callback so as to
-                                // avoid blowing out the stack size
-                                //Alpaca.nextTick(function () {
-                                //    callback();
-                                //});
 
                                 _done();
                             });
@@ -345,43 +340,48 @@
                 propertyFunctions.push(pf);
             }
 
-            // run on the next tick
-            Alpaca.nextTick(function() {
+            Alpaca.parallel(propertyFunctions, function(err) {
 
-                Alpaca.series(propertyFunctions, function(err) {
-
-                    // is there any order information in the items?
-                    var hasOrderInformation = false;
-                    for (var i = 0; i < items.length; i++) {
-                        if (typeof(items[i].options.order) !== "undefined") {
-                            hasOrderInformation = true;
-                            break;
-                        }
-                    }
-
-                    if (hasOrderInformation)
+                // build items array in correct property order
+                for (var propertyId in properties)
+                {
+                    var item = itemsByPropertyId[propertyId];
+                    if (item)
                     {
-                        // sort by order?
-                        items.sort(function (a, b) {
-
-                            var orderA = a.options.order;
-                            if (!orderA)
-                            {
-                                orderA = 0;
-                            }
-                            var orderB = b.options.order;
-                            if (!orderB)
-                            {
-                                orderB = 0;
-                            }
-
-                            return (orderA - orderB);
-                        });
+                        items.push(item);
                     }
+                }
 
-                    cf();
-                });
+                // is there any order information in the items?
+                var hasOrderInformation = false;
+                for (var i = 0; i < items.length; i++) {
+                    if (typeof(items[i].options.order) !== "undefined") {
+                        hasOrderInformation = true;
+                        break;
+                    }
+                }
 
+                if (hasOrderInformation)
+                {
+                    // sort by order?
+                    items.sort(function (a, b) {
+
+                        var orderA = a.options.order;
+                        if (!orderA)
+                        {
+                            orderA = 0;
+                        }
+                        var orderB = b.options.order;
+                        if (!orderB)
+                        {
+                            orderB = 0;
+                        }
+
+                        return (orderA - orderB);
+                    });
+                }
+
+                cf();
             });
         },
 
@@ -514,7 +514,11 @@
             // handle $ref
             if (propertySchema && propertySchema["$ref"])
             {
-                var referenceId = propertySchema["$ref"];
+                var propertyReferenceId = propertySchema["$ref"];
+                var fieldReferenceId = propertySchema["$ref"];
+                if (propertyOptions["$ref"]) {
+                    fieldReferenceId = propertyOptions["$ref"];
+                }
 
                 var topField = this;
                 var fieldChain = [topField];
@@ -527,7 +531,7 @@
                 var originalPropertySchema = propertySchema;
                 var originalPropertyOptions = propertyOptions;
 
-                Alpaca.loadRefSchemaOptions(topField, referenceId, function(propertySchema, propertyOptions) {
+                Alpaca.loadRefSchemaOptions(topField, propertyReferenceId, fieldReferenceId, function(propertySchema, propertyOptions) {
 
                     // walk the field chain to see if we have any circularity
                     var refCount = 0;
@@ -535,11 +539,11 @@
                     {
                         if (fieldChain[i].schema)
                         {
-                            if ( (fieldChain[i].schema.id === referenceId) || (fieldChain[i].schema.id === "#" + referenceId))
+                            if ( (fieldChain[i].schema.id === propertyReferenceId) || (fieldChain[i].schema.id === "#" + propertyReferenceId))
                             {
                                 refCount++;
                             }
-                            else if ( (fieldChain[i].schema["$ref"] === referenceId))
+                            else if ( (fieldChain[i].schema["$ref"] === propertyReferenceId))
                             {
                                 refCount++;
                             }
@@ -1549,17 +1553,17 @@
                         for (var i = 0; i < fields.length; i++)
                         {
                             fns.push(function(field) {
-                                return function(cb)
+                                return function(_done)
                                 {
                                     field.refreshValidationState(true, function() {
-                                        cb();
+                                        _done();
                                     });
                                 }
                             }(fields[i]));
                         }
 
                         // run all validations
-                        Alpaca.series(fns, function() {
+                        Alpaca.parallel(fns, function() {
 
                             var valid = true;
                             for (var i = 0; i < fields.length; i++)

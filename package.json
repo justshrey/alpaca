@@ -11,7 +11,7 @@
     "url": "git://github.com/justshrey/alpaca.git"
   },
   "license": "Apache-2.0",
-  "version": "1.5.23-patch.1",
+  "version": "1.5.24-patch.1",
   "devDependencies": {
     "bower": "*",
     "stream-browserify": "*",
@@ -47,14 +47,14 @@
     "jsdom": "*",
     "jshint": "*",
     "jshint-stylish": "*",
-    "lodash": "",
+    "lodash": "*",
     "node-gyp": "*",
     "node-static": "*",
     "phantom": "0.6.3",
     "q": "^1.0.1",
     "run-sequence": "*",
     "through2": "*",
-    "wd": "",
+    "wd": "*",
     "wrench": "*"
   },
   "dependencies": {}

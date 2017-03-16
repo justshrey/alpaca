@@ -56,6 +56,10 @@ var paths = {
             "src/js/ContainerField.js",
             "src/js/Form.js",
 
+            // cache implementations
+            "src/js/cache/memory.js",
+            "src/js/cache/null.js",
+
             // connectors
             "src/js/connectors/default.js",
             "src/js/connectors/cloudcms.js",
@@ -118,12 +122,14 @@ var paths = {
             "src/js/messages/i18n/cs_CZ.js",
             "src/js/messages/i18n/de_AT.js",
             "src/js/messages/i18n/de_DE.js",
+            "src/js/messages/i18n/el_GR.js",
             "src/js/messages/i18n/es_ES.js",
             "src/js/messages/i18n/fi_FI.js",
             "src/js/messages/i18n/fr_FR.js",
             "src/js/messages/i18n/hr_HR.js",
             "src/js/messages/i18n/it_IT.js",
             "src/js/messages/i18n/ja_JP.js",
+            "src/js/messages/i18n/nb_NO.js",
             "src/js/messages/i18n/nl_BE.js",
             "src/js/messages/i18n/pl_PL.js",
             "src/js/messages/i18n/pt_BR.js",
